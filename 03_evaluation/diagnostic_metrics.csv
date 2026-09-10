@@ -1,0 +1,7 @@
+method,precision_macro,recall_macro,f1_macro,dice_teeth
+Supervised,0.329941,0.346302,0.337924,0.308441
+Old pipeline,0.6680,0.2630,0.377409,0.247793
+YOLO+SAM+Hungarian,0.3915,0.4365,0.412777,0.386807
+Self-train R1,0.5246,0.5840,0.552709,0.504728
+Self-train R2,0.4063,0.4401,0.422525,0.415068
+DG-CSPC,0.676248,0.640233,0.657748,0.609610

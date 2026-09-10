@@ -1,0 +1,39 @@
+# SegFormer-B0 configuration
+
+experiment_name: segformer_b0
+seed: 42
+
+data:
+  image_dir: data/processed/images
+  mask_dir: data/processed/masks
+  train_split: data/splits/train.txt
+  val_split: data/splits/val.txt
+  test_split: data/splits/test.txt
+  image_size: [512, 512]
+
+model:
+  name: segformer_b0
+  encoder: mit_b0
+  pretrained: true
+  in_channels: 1
+  num_classes: 1
+
+training:
+  epochs: 50
+  batch_size: 2
+  learning_rate: 0.0001
+  weight_decay: 0.00001
+  optimizer: adamw
+  scheduler: cosine
+  early_stopping_patience: 15
+  num_workers: 0
+
+loss:
+  bce_weight: 1.0
+  dice_weight: 1.0
+  boundary_weight: 0.0
+  from_logits: true
+
+output:
+  save_dir: experiments/segformer_b0
+  save_best_only: true

@@ -1,0 +1,14 @@
+{
+  "best_val_dice_p1": 0.2936844825744629,
+  "best_val_dice_p2": 0.5024747848510742,
+  "test_dice_macro": 0.5981078147888184,
+  "test_dice_teeth": 0.6096099019050598,
+  "test_iou": 0.45478230714797974,
+  "teeth_above_05": 41,
+  "teeth_above_06": 36,
+  "features": {
+    "boundary_loss": true,
+    "deep_supervision": true,
+    "pseudo_dir": "data/pseudo_masks_selective"
+  }
+}

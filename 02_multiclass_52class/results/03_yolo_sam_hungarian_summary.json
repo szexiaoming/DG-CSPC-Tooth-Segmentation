@@ -1,0 +1,14 @@
+{
+  "best_val_dice_p1": 0.41413843631744385,
+  "best_val_dice_p2": 0.5045348405838013,
+  "test_dice_macro": 0.39792653918266296,
+  "test_dice_teeth": 0.38680654764175415,
+  "test_iou": 0.28528836369514465,
+  "teeth_above_05": 23,
+  "teeth_above_06": 12,
+  "features": {
+    "boundary_loss": true,
+    "deep_supervision": true,
+    "pseudo_dir": "data/pseudo_masks_yolo_sam"
+  }
+}

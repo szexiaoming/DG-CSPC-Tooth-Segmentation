@@ -1,0 +1,58 @@
+# EXCLUDED — exploratory SSL v2 experiment, NOT reported in the final dissertation.
+# Post-hoc audit: `confidence = 1 - 2*|p-0.5|` is an uncertainty weight (peaks at
+# p=0.5), so uncertain pixels were weighted HIGHER — the inverse of the stated intent.
+# Preserved for reference only; does not affect the 52-class DG-CSPC framework.
+#
+# Improved SSL v2: Soft pseudo-labels + confidence weighting + warmup/ramp
+# Key fixes vs original SSL:
+#  - Soft probability maps from strong teacher (Ours Lightweight, Val Dice 0.8912)
+#  - Confidence-weighted loss: uncertain pixels contribute less
+#  - Gradual pseudo-label weight ramp (warmup → ramp → full)
+#  - Lower boundary_weight: 0.02 (was 0.1 in original SSL)
+#  - All pseudo-labels used (confidence handles quality automatically)
+
+experiment_name: ours_lightweight_ssl_v2
+seed: 42
+
+data:
+  image_dir: data/processed/images
+  mask_dir: data/processed/masks
+  train_split: data/splits/train.txt
+  val_split: data/splits/val.txt
+  test_split: data/splits/test.txt
+  image_size: [512, 512]
+
+model:
+  name: unet
+  encoder: mobilenet_v2
+  pretrained: true
+  in_channels: 1
+  num_classes: 1
+
+training:
+  epochs: 50
+  batch_size: 2
+  learning_rate: 0.0002
+  weight_decay: 0.00001
+  optimizer: adamw
+  scheduler: cosine
+  early_stopping_patience: 15
+  num_workers: 0
+
+loss:
+  bce_weight: 1.0
+  dice_weight: 1.0
+  boundary_weight: 0.02   # Reduced from 0.1 (original SSL) — closer to boundary model (0.05)
+  boundary_radius: 3
+  boundary_factor: 5.0
+  from_logits: true
+
+ssl:
+  warmup_epochs: 5        # First 5 epochs: labeled data only
+  ramp_epochs: 10          # Next 10 epochs: pseudo-label weight ramps 0→1
+  max_pseudo_weight: 1.0   # Final weight for pseudo-label loss
+  max_pseudo_samples: 0    # 0 = use all available soft pseudo-labels
+
+output:
+  save_dir: experiments/ours_lightweight_ssl_v2
+  save_best_only: true

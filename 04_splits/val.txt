@@ -1,0 +1,4 @@
+STS24_Train_Labeled_0005
+STS24_Train_Labeled_0008
+STS24_Train_Labeled_0025
+STS24_Train_Labeled_0029

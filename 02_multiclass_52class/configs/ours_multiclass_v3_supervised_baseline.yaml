@@ -1,0 +1,56 @@
+# v3 Supervised Baseline: NO pseudo-labels, 30 labeled images only
+# Phase 1: 1 epoch (just to initialize pipeline, minimal impact)
+# Phase 2: 80 epochs pure supervised on 21 labeled images
+# Purpose: measure pseudo-label + self-training gain vs pure supervised
+
+experiment_name: ours_multiclass_v3_supervised
+seed: 42
+
+data:
+  image_dir: data/processed/images
+  mask_dir: data/processed/masks_multiclass
+  pseudo_mask_dir: data/pseudo_masks_yolo_sam    # needed for pipeline init only
+  train_split: data/splits/train.txt
+  val_split: data/splits/val.txt
+  test_split: data/splits/test.txt
+  image_size: [512, 512]
+  num_classes: 53
+  pseudo_quality_threshold: 0.0                  # keep all (just for 1-epoch init)
+  phase1_epochs: 1                               # minimal - just init pipeline
+  phase2_epochs: 80                              # main supervised training
+
+model:
+  name: unet
+  encoder: mobilenet_v2
+  pretrained: true
+  in_channels: 1
+  num_classes: 53
+
+training:
+  batch_size: 8
+  learning_rate: 0.0005                          # higher lr (no warm start from pseudo)
+  phase2_lr: 0.0001                              # higher lr for phase2 from scratch
+  weight_decay: 0.00001
+  optimizer: adamw
+  scheduler: cosine
+  early_stopping_patience: 25
+  num_workers: 4
+  gradient_accumulation_steps: 1
+
+deep_supervision:
+  enabled: true
+  aux_scales: [1, 2, 3]
+  aux_weight: 0.3
+
+loss:
+  ce_weight: 1.0
+  dice_weight: 1.0
+  boundary_weight: 0.5
+  boundary_radius: 2
+  boundary_emphasis: 5.0
+  use_class_weights: true
+  label_smoothing: 0.0
+
+output:
+  save_dir: experiments/ours_multiclass_v3_supervised
+  save_best_only: true

@@ -1,0 +1,88 @@
+# v2 improved iter4: per-class thresholds + adaptive boost
+# Changes from standard iter4:
+# - Dead classes (Dice=0) → NO boost (amplifying noise is harmful)
+# - Weak-but-alive classes → KEEP boost (they need it to survive)
+# - Moderate classes → gradual boost decay (not sudden removal)
+# - Strong classes → no boost
+
+experiment_name: ours_multiclass_v3_iter4_v2
+seed: 42
+
+data:
+  image_dir: data/processed/images
+  mask_dir: data/processed/masks_multiclass
+  pseudo_mask_dir: data/pseudo_masks_iter4_v2
+  train_split: data/splits/train.txt
+  val_split: data/splits/val.txt
+  test_split: data/splits/test.txt
+  image_size: [512, 512]
+  num_classes: 53
+  pseudo_quality_threshold: 0.3
+  phase1_epochs: 40
+  phase2_epochs: 50
+
+model:
+  name: unet
+  encoder: mobilenet_v2
+  pretrained: true
+  in_channels: 1
+  num_classes: 53
+
+training:
+  batch_size: 8
+  learning_rate: 0.0002
+  phase2_lr: 0.00005
+  weight_decay: 0.00001
+  optimizer: adamw
+  scheduler: cosine
+  early_stopping_patience: 25
+  num_workers: 4
+  gradient_accumulation_steps: 1
+  hard_class_boost:
+    # ── STRATEGY v2: boost the weak-but-alive, not the dead ──
+    #
+    # Dead classes (Dice = 0.000): NO boost
+    #   → boosting dead classes amplifies random gradients
+    #   → pseudo-labels for these classes are frozen from best round
+    #   54, 64, 65, 72, 73, 74, 81 — REMOVED from boost list
+    #
+    # Near-dead classes (Dice < 0.02): moderate boost to try recovery
+    61: 6.0   # FDI 61 (0.004)
+    62: 6.0   # FDI 62 (0.076)
+    75: 6.0   # FDI 75 (0.003)
+    82: 6.0   # FDI 82 (0.115)
+    #
+    # Weak deciduous (Dice 0.1–0.4): KEEP or INCREASE boost
+    51: 5.0   # FDI 51 (0.376) — was ~good, keep moderate
+    52: 5.0   # FDI 52 (0.375)
+    53: 5.0   # FDI 53 (0.461)
+    55: 5.0   # FDI 55 (0.436) — WAS REMOVED in std iter4, KEPT here
+    71: 6.0   # FDI 71 (0.149) — WAS REMOVED in std iter4, RESTORED
+    73: 5.0   # FDI 73 (0.328) — WAS REMOVED in std iter4, RESTORED
+    74: 6.0   # FDI 74 (0.135) — WAS REMOVED in std iter4, RESTORED
+    83: 4.0   # FDI 83 (0.166)
+    84: 5.0   # FDI 84 (0.349) — WAS REMOVED in std iter4, RESTORED
+    85: 5.0   # FDI 85 (0.161) — WAS REMOVED in std iter4, RESTORED
+    #
+    # Permanent weak classes (Dice < 0.5): gradual boost
+    42: 2.0   # FDI 42 (0.423)
+    45: 3.0   # FDI 45 (0.346)
+    47: 2.0   # FDI 47 (0.584)
+
+deep_supervision:
+  enabled: true
+  aux_scales: [1, 2, 3]
+  aux_weight: 0.3
+
+loss:
+  ce_weight: 1.0
+  dice_weight: 1.0
+  boundary_weight: 0.5
+  boundary_radius: 2
+  boundary_emphasis: 5.0
+  use_class_weights: true
+  label_smoothing: 0.05
+
+output:
+  save_dir: experiments/ours_multiclass_v3_iter4_v2
+  save_best_only: true
