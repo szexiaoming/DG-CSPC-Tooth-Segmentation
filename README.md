@@ -308,7 +308,7 @@ The remaining source figures (old numbering / alternative versions, incl. `.pdf`
 
 **The dataset (`data/`) and model weights (`experiments/`) are not packaged in this submission** (together ~3.3 GB, exceeding the 230 MB upload limit). They are uploaded to a **Google Drive** folder named `thesis_data_weights/`, which mirrors this package's layout; copy its contents back into this package per the mapping below.
 
-> **Google Drive folder link**: https://drive.google.com/drive/folders/1XMtzlWz1c9M3w8Bxw0jQEiq08LPU0mRR
+> **Google Drive folder link**: [https://drive.google.com/drive/folders/1XMtzlWz1c9M3w8Bxw0jQEiq08LPU0mRR](https://drive.google.com/drive/folders/1BNadgVK_0DBEhDUBDYqWFbiSfhMMRVR3)
 
 The drive folder has three subfolders, each mapping 1:1 onto this package:
 
